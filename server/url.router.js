@@ -31,10 +31,10 @@ router.put('/', (req, res) => {
 
 // Url GET route
 router.get('/', (req, res) => {
-	Url.find({}, (err, docs) => {
-		console.log(docs);
-		return err ? res.json({ success: false, error: err }) : res.send(docs)
-	})
+	// Url.find({}, (err, docs) => {
+	// 	console.log(docs);
+	// 	return err ? res.json({ success: false, error: err }) : res.send(docs)
+	// })
 });
 
 // Url DELETE route
