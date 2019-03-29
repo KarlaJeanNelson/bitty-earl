@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import Login from './Login';
 import Form from './Form';
 import List from './List';
 import {
 	CssBaseline,
 	Grid
 } from '@material-ui/core'
-import { toUnicode } from 'punycode';
 
 const styles = {
 	container: {
@@ -18,11 +18,60 @@ const styles = {
 
 class App extends Component {
 	state = {
+		signupMode: false,
+		email: '',
+		password: '',
+		password2: '',
+		userId: '',
 		longurl: '',
-		helperText: 'Enter your url.',
+		helperText: '',
 		error: false,
 		urlList: []
 	};
+
+	login = event => {
+		event.preventDefault();
+		const config = {
+			method: 'post',
+			url: 'api/users/login',
+			withCredentials: true,
+			data: {
+				email: this.state.email.toLowerCase(),
+				password: this.state.password
+			}
+		}
+		axios(config)
+		.then(({ data }) => this.setState({ userId: data.id }))
+		.catch(e => this.handleApiError(e))
+	}
+
+	register = event => {
+		event.preventDefault();
+		this.setHelperText('', false);
+		const { password, password2 } = this.state;
+		password === password2 ? this.createUser(event)
+		: this.setHelperText(`Passwords must match!`, true)
+	}
+
+	createUser = event => {
+		const config = {
+			method: 'post',
+			url: '/api/users',
+			data: {
+				email: this.state.email.toLowerCase(),
+				password: this.state.password
+			}
+		}
+		axios(config)
+			.then(this.login(event))
+			.catch(e => this.handleApiError(e))
+	}
+
+	toggleMode = () => {
+		this.setState({
+			signupMode: !this.state.signupMode
+		})
+	}
 
 	getUrls = () => {
 		const config = {
@@ -46,34 +95,34 @@ class App extends Component {
 	onSubmit = event => {
 		event.preventDefault();
 		const { longurl } = this.state;
-		let myUrl = this.checkProtocol(longurl);
 		try {
-			new URL(myUrl);
+			let myUrl = this.checkProtocol(longurl);
+			myUrl = new URL(myUrl);
 			this.setHelperText('Looing good! Testing URL...', false);
-			this.saveUrl(longurl);
+			this.saveUrl(myUrl.toString());
 		} catch(e) {
 			this.setHelperText(`Not a valid url.`, true)
 		}
 	}
 
 	checkProtocol = longurl => {
-		if (longurl.startsWith('http://') || longurl.startsWith('https://')) {
-			return longurl
-		} else {
-			const newUrl = `https://${longurl}`;
-			this.setState({
-				longurl: newUrl
-			})
-			return newUrl;
-		}
+		let newUrl = longurl.replace('www.', '')
+		newUrl = (newUrl.startsWith('http://') || newUrl.startsWith('https://'))
+		? newUrl : `https://${newUrl}`
+		this.setState({
+			longurl: newUrl
+		})
+		return newUrl;
 	}
 
 	// Set helpertext for form field
-	setHelperText = (helperText, err) => {
+	setHelperText = (helperText, err, longurl='') => {
 		this.setState({
 			helperText,
-			err
+			err,
+			longurl
 		})
+		console.log(this.state);
 	}
 
 	saveUrl = longurl => {
@@ -99,8 +148,13 @@ class App extends Component {
 		axios(config)
 			.then(({data}) => this.setHelperText(data.message, false))
 			.then(this.getUrls())
-			.catch(e => this.setHelperText(e.response ? e.response.data.message
-				: e.message, true))
+			.catch(e => this.handleApiError(e))
+	}
+
+	handleApiError = e => {
+		const message = e.response ? e.response.data.message
+		: e.message
+		this.setHelperText(message, true)
 	}
 
 	componentDidMount() {
@@ -108,11 +162,23 @@ class App extends Component {
 	}
 
   render() {
-		const { urlList, longurl, helperText } = this.state;
+		const { urlList, longurl, helperText, email, password, signupMode } = this.state;
     return (
       <div style={styles.container}>
 				<CssBaseline />
 				<Grid container spacing={16} direction="column">
+					<Grid item xs={12}>
+						<Login
+							email={email}
+							password={password}
+							signupMode={signupMode}
+							helperText={helperText}
+							onChange={this.onChange}
+							login={this.login}
+							register={this.register}
+							toggleMode={this.toggleMode}
+						/>
+					</Grid>
 					<Grid item xs={12}>
 						<Form
 							longurl={longurl}

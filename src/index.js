@@ -3,11 +3,11 @@ import ReactDOM from 'react-dom';
 import { MuiThemeProvider} from '@material-ui/core/styles';
 import theme from './App.theme';
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faTimesCircle, faUserCircle, faLock, faCheckDouble } from '@fortawesome/free-solid-svg-icons'
 import App from './App';
 // import * as serviceWorker from './serviceWorker';
 
-library.add(faTimesCircle)
+library.add(faTimesCircle, faUserCircle, faLock, faCheckDouble )
 
 ReactDOM.render(
 	<MuiThemeProvider theme={theme}>

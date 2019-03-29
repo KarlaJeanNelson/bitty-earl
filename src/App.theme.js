@@ -1,6 +1,11 @@
 import { createMuiTheme } from '@material-ui/core/styles';
 
 const theme = createMuiTheme({
+	props: {
+		MuiInputLabel: {
+			shrink: true,
+		}
+	},
   palette: {
     primary: {
 			main: '#05324b'
