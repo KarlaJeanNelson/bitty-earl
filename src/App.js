@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import axios from 'axios';
+import { withCookies, Cookies } from 'react-cookie';
+import { instanceOf } from 'prop-types';
 import Login from './Login';
 import Form from './Form';
 import List from './List';
@@ -60,11 +62,11 @@ class App extends Component {
 		} else if (password !== password2 ) {
 			this.setHelperText('Passwords must match!', true)
 		} else {
-			this.createUser(event)
+			this.createUser()
 		}
 	}
 
-	createUser = event => {
+	createUser = () => {
 		const config = {
 			method: 'post',
 			url: '/api/users',
@@ -75,12 +77,15 @@ class App extends Component {
 			}
 		}
 		axios(config)
-			.then(this.login(event))
+			.then(({data}) => {
+				this.setHelperText(data.message, false)
+				this.login()
+			})
 			.catch(e => this.handleApiError(e))
 	}
 
-	login = event => {
-		event.preventDefault();
+	login = (event = '') => {
+		if (event) { event.preventDefault() }
 		const config = {
 			method: 'post',
 			url: '/api/users/login',
@@ -89,13 +94,18 @@ class App extends Component {
 				password: this.state.password
 			}
 		}
-		this.setHelperText('', false)
 		axios(config)
 		.then(({data}) => {
-			this.setState({ _id: data._id });
+			// console.log(data)
+			this.setState({ _id: data._id, helperText: data.message });
 			this.getUser();
 		})
-		.catch(e => this.handleApiError(e))
+		.catch(e => {
+			if (e.respnse && e.response.data.message && e.response.data.message.includes('Please register')) {
+				this.toggleMode();
+			}
+			this.handleApiError(e)
+		})
 	}
 
 	logout = event => {
@@ -118,7 +128,7 @@ class App extends Component {
 		}
 		axios(config)
 			.then(({data}) => this.setState({ urlList: data.docs }))
-			.catch(e => this.setHelperText(e.message, true))
+			.catch(e => this.handleApiError(e))
 	}
 
 	onChange = event => {
@@ -262,4 +272,8 @@ class App extends Component {
   }
 }
 
-export default App;
+App.propTypes = {
+	cookies: instanceOf(Cookies).isRequired
+};
+
+export default withCookies(App);

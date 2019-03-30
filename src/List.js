@@ -41,8 +41,8 @@ const List = ({ urlList, deleteItem }) => (
 				<TableHead>
 					<TableRow>
 						<TableCell style={styles.longurl}>long url</TableCell>
-						<TableCell style={styles.shorturl} align="center">short url</TableCell>
-						<TableCell align="center" style={styles.hitcount}>hit count</TableCell>
+						<TableCell style={styles.shorturl}>short url</TableCell>
+						<TableCell align="right" style={styles.hitcount}>hit count</TableCell>
 						<TableCell align="center" style={{width: 72}}>delete</TableCell>
 					</TableRow>
 				</TableHead>
@@ -50,12 +50,12 @@ const List = ({ urlList, deleteItem }) => (
 					{urlList.map(item => (
 						<TableRow key={item._id} hover={true}>
 							<TableCell style={styles.cell}>
-								<Link href={item.longurl} target="_blank">
+								<Link href={item.shorturl} target="_blank">
 									{item.longurl}
 								</Link>
 							</TableCell>
 							<TableCell style={styles.cell}>
-								<Link href={item.longurl} target="_blank">
+								<Link href={item.shorturl} target="_blank">
 									{item.shorturl}
 								</Link>
 							</TableCell>
