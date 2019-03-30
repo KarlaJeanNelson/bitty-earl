@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import Login from './Login';
 import Form from './Form';
 import List from './List';
 import {
 	CssBaseline,
-	Grid
+	Grid,
+	Button
 } from '@material-ui/core'
 
 const styles = {
@@ -16,47 +17,58 @@ const styles = {
 	}
 }
 
+const reset = {
+	signupMode: false,
+	email: '',
+	password: '',
+	password2: '',
+	_id: '',
+	longurl: '',
+	helperText: '',
+	error: false,
+	urlList: []
+};
+
 class App extends Component {
 	state = {
 		signupMode: false,
 		email: '',
 		password: '',
 		password2: '',
-		userId: '',
+		_id: '',
 		longurl: '',
 		helperText: '',
 		error: false,
 		urlList: []
 	};
 
-	login = event => {
-		event.preventDefault();
-		const config = {
-			method: 'post',
-			url: 'api/users/login',
-			withCredentials: true,
-			data: {
-				email: this.state.email.toLowerCase(),
-				password: this.state.password
-			}
-		}
-		axios(config)
-		.then(({ data }) => this.setState({ userId: data.id }))
-		.catch(e => this.handleApiError(e))
+	getUser = () => {
+		axios.get('/api/users', { withCredentials: true })
+			.then(({ data }) => {
+				this.setState({ ...reset, _id: data._id })
+				this.getUrls()
+			})
+			.catch(e => this.handleApiError(e))
 	}
 
 	register = event => {
 		event.preventDefault();
-		this.setHelperText('', false);
 		const { password, password2 } = this.state;
-		password === password2 ? this.createUser(event)
-		: this.setHelperText(`Passwords must match!`, true)
+		this.setHelperText('', false);
+		if (password.length < 8 ) {
+			this.setHelperText('Password must at least 8 characters', true)
+		} else if (password !== password2 ) {
+			this.setHelperText('Passwords must match!', true)
+		} else {
+			this.createUser(event)
+		}
 	}
 
 	createUser = event => {
 		const config = {
 			method: 'post',
 			url: '/api/users',
+			withCredentials: true,
 			data: {
 				email: this.state.email.toLowerCase(),
 				password: this.state.password
@@ -65,6 +77,32 @@ class App extends Component {
 		axios(config)
 			.then(this.login(event))
 			.catch(e => this.handleApiError(e))
+	}
+
+	login = event => {
+		event.preventDefault();
+		const config = {
+			method: 'post',
+			url: '/api/users/login',
+			data: {
+				email: this.state.email.toLowerCase(),
+				password: this.state.password
+			}
+		}
+		this.setHelperText('', false)
+		axios(config)
+		.then(({data}) => {
+			this.setState({ _id: data._id });
+			this.getUser();
+		})
+		.catch(e => this.handleApiError(e))
+	}
+
+	logout = event => {
+		event.preventDefault();
+		axios.post('/api/users/logout')
+		.then(this.setState(reset))
+		.catch(e => this.handleApiError(e))
 	}
 
 	toggleMode = () => {
@@ -122,7 +160,6 @@ class App extends Component {
 			err,
 			longurl
 		})
-		console.log(this.state);
 	}
 
 	saveUrl = longurl => {
@@ -146,54 +183,79 @@ class App extends Component {
 
 	apiCall = config => {
 		axios(config)
-			.then(({data}) => this.setHelperText(data.message, false))
-			.then(this.getUrls())
+			.then(({data}) => {
+				this.setHelperText(data.message, false)
+				this.getUrls()
+			})
 			.catch(e => this.handleApiError(e))
 	}
 
 	handleApiError = e => {
-		const message = e.response ? e.response.data.message
-		: e.message
+		// console.log(e);
+		const message = !e.response ? e.message : e.response.data.message
 		this.setHelperText(message, true)
 	}
 
+	LoginForm = () => {
+		const { helperText, email, password, signupMode } = this.state;
+		return (
+			<Grid item xs={12}>
+				<Login
+					email={email}
+					password={password}
+					signupMode={signupMode}
+					helperText={helperText}
+					onChange={this.onChange}
+					login={this.login}
+					register={this.register}
+					toggleMode={this.toggleMode}
+				/>
+			</Grid>
+		)
+	}
+
+	UrlFormAndList = () => {
+		const { urlList, longurl, helperText } = this.state;
+		return (
+			<Fragment>
+				<Grid item xs={12} container justify="flex-end">
+					<Button
+						color="secondary"
+						variant="contained"
+						onClick={this.logout}
+					>
+						Logout
+					</Button>
+				</Grid>
+				<Grid item xs={12}>
+					<Form
+						longurl={longurl}
+						helperText={helperText}
+						onChange={this.onChange}
+						onSubmit={this.onSubmit}
+					/>
+				</Grid>
+				<Grid item xs={12}>
+					<List
+						urlList={urlList}
+						getUrls={this.getUrls}
+						deleteItem={this.deleteItem}
+					/>
+				</Grid>
+			</Fragment>
+		)
+	}
+
 	componentDidMount() {
-		this.getUrls();
+		this.getUser();
 	}
 
   render() {
-		const { urlList, longurl, helperText, email, password, signupMode } = this.state;
     return (
       <div style={styles.container}>
 				<CssBaseline />
 				<Grid container spacing={16} direction="column">
-					<Grid item xs={12}>
-						<Login
-							email={email}
-							password={password}
-							signupMode={signupMode}
-							helperText={helperText}
-							onChange={this.onChange}
-							login={this.login}
-							register={this.register}
-							toggleMode={this.toggleMode}
-						/>
-					</Grid>
-					<Grid item xs={12}>
-						<Form
-							longurl={longurl}
-							helperText={helperText}
-							onChange={this.onChange}
-							onSubmit={this.onSubmit}
-						/>
-					</Grid>
-					<Grid item xs={12}>
-						<List
-							urlList={urlList}
-							getUrls={this.getUrls}
-							deleteItem={this.deleteItem}
-						/>
-					</Grid>
+					{ this.state._id ? <this.UrlFormAndList /> : <this.LoginForm /> }
 				</Grid>
       </div>
     );

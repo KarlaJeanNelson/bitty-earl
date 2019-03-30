@@ -11,6 +11,6 @@ router.route('/logout')
 
 router.route('/')
 	.post(user.register)
-	.get(user.get)
+	.get(user.isAuthenticated, user.get)
 
 module.exports = router;

@@ -3,23 +3,19 @@ const User = require('./user.model');
 
 module.exports = class myUser {
 	static register(req, res) {
-		bcrypt.hash(req.body.password, 10)
-			.then(hash => {
-				User.create({
-					email: req.body.email,
-					password: hash
-				})
-					.then(user => res.status(201).json({ _id: user._id, email: user.email }))
-					.catch(e => res.status(400).json({ error: true, message: e.message }))
-			})
-			.catch(e => res.status(400).json({ error: true, message: e.message }))
-	}
+		User.create({
+			email: req.body.email,
+			password: bcrypt.hashSync(req.body.password, 10)
+		})
+		.then(user => res.status(201).json({ _id: user._id, email: user.email }))
+		.catch(e => res.status(400).json({ error: true, message: e.message }))
+}
 
 	static login(req, res) {
-		// console.log(`in login`);
+		// console.log(`in login`, req.user);
     res.status(200).json({
       email: req.user.email,
-      id: req.user._id
+      _id: req.user._id
     });
 	}
 
@@ -30,19 +26,16 @@ module.exports = class myUser {
 	}
 
 	static get(req, res) {
-    res.status(200).send({
-      email: req.user[0].email,
-      id: req.user[0].id
-    })
+		// console.log(`in getuser`, req.user);
+    res.status(200).json(req.user)
   }
 
-  static isLoggedIn(req, res, next) {
-    if (req.isAuthenticated() || process.env.NODE_ENV === 'test') {
-      next()
+  static isAuthenticated(req, res, next) {
+		// console.log(`in isAuthenticated`, req.isAuthenticated());
+    if (req.isAuthenticated()) {
+      next();
     } else {
-      console.log('nope');
-      res.redirect('/');
+      res.status(403).json({ error: true, message: 'User not authenticated' });
     }
   }
-
 }
