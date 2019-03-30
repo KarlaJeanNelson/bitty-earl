@@ -1,14 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const Url = require('./url.model');
+const urlExists = require('./url-exists')
+const getShortUrl = require('./url-getshort');
 
 // Url POST route
 router.post('/', (req, res) => {
 	const { newUrl } = req.body;
-	// console.log(`in post route`, newUrl);
-	// Url.create({ Url: newUrl }, (err, doc) => {
-	// 	err ? res.json({ success: false, error: err }) : res.sendStatus(201)
-	// })
+	// console.log(`in post router`, newUrl);
+	urlExists(newUrl)
+		.then(longurl => getShortUrl(longurl))
+		.then(myUrl => createUrl(myUrl))
+		.then(doc => {
+			// console.log(`in then`, doc);
+			res.json({ status: 201, error: false, message: `New record created with id ${doc._id}.`});
+		})
+		.catch(e => {
+			// console.log(`in catch`, e.message);
+			res.json({ status: 400, error: true, message: e.message })
+		})
+})
+
+const createUrl = newUrl => new Promise((resolve, reject) => {
+	Url.create(newUrl, (err, doc) => {
+		if (err) {
+			// console.log(`reject`, err.message);
+			reject(new Error(err.message))
+		} else {
+			// console.log(`resolve`);
+			resolve(doc)
+		}
+	})
 })
 
 // Url PUT route
@@ -31,10 +53,12 @@ router.put('/', (req, res) => {
 
 // Url GET route
 router.get('/', (req, res) => {
-	// Url.find({}, (err, docs) => {
-	// 	console.log(docs);
-	// 	return err ? res.json({ success: false, error: err }) : res.send(docs)
-	// })
+	console.log(`in get route`);
+	Url.find({}, (err, docs) => {
+		console.log(docs);
+		return err ? res.json({ status: 400, error: true, message: err.message })
+		: res.json({ status: 200, error: false, docs })
+	})
 });
 
 // Url DELETE route
