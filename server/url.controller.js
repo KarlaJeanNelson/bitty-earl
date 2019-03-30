@@ -14,12 +14,12 @@ module.exports = class myUrl {
 	}
 
 	static post(req, res, next) {
-		// console.log(`in myUrl.post`);
-		const getShortId = crypto.randomBytes(3)
+		// console.log(`in myUrl.post`, req.user);
+		const getShortId = crypto.randomBytes(4)
 		const newUrl = {
 			longurl: req.body.longurl,
-			shorturl: getShortId.toString('hex')
-			// user_id: req.user[0]._id
+			shorturl: getShortId.toString('hex'),
+			user_id: req.user._id
 		}
 		Url.create(newUrl, (err, doc) => {
 			err ? res.status(400).json({ error: true, message: err.message })
@@ -28,20 +28,17 @@ module.exports = class myUrl {
 	}
 
 	static get(req, res) {
-		// console.log(`in myUrl.get`);
-		// Url.find({ user_id: req.user[0]._id }, (err, docs) => {
-		Url.find({ }, (err, docs) => {
+		// console.log(`in myUrl.get`, req.user);
+		Url.find({ user_id: req.user._id }, (err, docs) => {
 			err ? res.status(400).json({ error: true, message: err.message })
 			: res.status(200).json({ error: false, message: `Success!`, docs })
 		})
 	}
 
 	static delete(req, res) {
-		// console.log(`in myUrl.get`);
-		// Url.find({ user_id: req.user[0]._id }, (err, docs) => {
-			Url.findOneAndDelete({ _id: req.params.id }, (err, doc) => {
-				err ? res.json({ error: true, message: err.message })
-				: res.status(201).json({ error: false, message: `Record ${doc._id} deleted` })
-			})
-		}
+		Url.findOneAndDelete({ _id: req.params.id }, (err, doc) => {
+			err ? res.status(400).json({ error: true, message: err.message })
+			: res.status(200).json({ error: false, message: `Record ${doc._id} deleted` })
+		})
+	}
 }

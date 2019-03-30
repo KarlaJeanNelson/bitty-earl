@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const myUrl = require('./url.controller');
+const user = require('./user.controller')
 
 router.route('/')
-  .get(myUrl.get)
-	.post(myUrl.exists, myUrl.post)
+  .get(user.isAuthenticated, myUrl.get)
+	.post(user.isAuthenticated, myUrl.exists, myUrl.post)
 
 router.route('/:id')
-	.delete(myUrl.delete)
+	.delete(user.isAuthenticated, myUrl.delete)
 
 module.exports = router;
