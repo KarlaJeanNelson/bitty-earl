@@ -12,7 +12,7 @@ module.exports = class myUser {
 }
 
 	static login(req, res) {
-		// console.log(`in login`, req.user);
+		// console.log(`in login`, req.body);
     res.status(200).json({
       email: req.user.email,
       _id: req.user._id

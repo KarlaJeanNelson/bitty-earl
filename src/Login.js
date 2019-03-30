@@ -8,6 +8,7 @@ import {
 	Tabs,
 	Tab,
 	TextField,
+	Typography
 } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -79,7 +80,6 @@ const Login = props => {
 							label="retype password"
 							value={password2}
 							onChange={(e)=>onChange(e)}
-							helperText={helperText}
 							InputProps={{
 								startAdornment: (
 									<InputAdornment position="start">
@@ -89,6 +89,7 @@ const Login = props => {
 							}}
 						/>
 					}
+					<Typography>{helperText}</Typography>
 					<Button
 						variant="contained"
 						color="secondary"

@@ -1,9 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const crypto = require('crypto');
 const User = require('./user.model');
-
-const getShortId = crypto.randomBytes(3)
 
 const urlSchema = new Schema({
 	longurl: { type: String, required: true },
@@ -12,7 +9,6 @@ const urlSchema = new Schema({
 		index: true,
 		unique: true,
 		required: true,
-		default: getShortId.toString('hex')
 	},
 	hitcount: { type: Number, required: true, default: 0 },
 	user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true }
