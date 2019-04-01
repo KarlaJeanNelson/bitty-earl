@@ -3,6 +3,8 @@ const app = express();
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const http = require('http');
+const https = require('https');
 const passport = require('./user.local-strategy');
 const myUrl = require('./url.controller')
 
@@ -47,11 +49,12 @@ app.listen(PORT, () => {
 		console.log(`Listening on port ${PORT}.`);
 });
 
-app.listen(3000, () => {
-	console.log(`Listening on port ${PORT}.`);
-});
+// app.listen(3000, () => {
+// 	console.log(`Listening on port 3000.`);
+// });
 
 // const httpServer = http.createServer()
 // httpServer.listen(80)
 // httpServer.on('request', (req, res) => console.log(req, res))
 // https.createServer().listen(443);
+// httpServer.on('request', (req, res) => console.log(req, res))
