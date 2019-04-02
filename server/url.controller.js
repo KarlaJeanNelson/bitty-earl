@@ -57,7 +57,7 @@ module.exports = class myUrl {
 	}
 
 	static increment(req, res, next) {
-		console.log(`in increment`, req.params);
+		// console.log(`in increment`, req.params);
 		const longUrl = utils.urlPath(req.params.website);
 		// If user logged in, only update that user's record;
 		// otherwise, update all records that match the url.
