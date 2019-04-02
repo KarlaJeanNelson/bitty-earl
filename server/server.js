@@ -41,7 +41,7 @@ app.use(passport.session());
 /** ---------- EXPRESS ROUTES ---------- **/
 app.use('/api/urls', require('./url.router'));
 app.use('/api/users', require('./user.router'));
-app.use('https://', require('./website.router'))
+app.use('/', require('./website.router'))
 /** ---------- START SERVER ---------- **/
 app.listen(PORT, () => {
 		console.log(`Listening on port ${PORT}.`);
