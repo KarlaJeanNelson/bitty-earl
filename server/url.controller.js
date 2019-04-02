@@ -1,16 +1,12 @@
 const axios = require('axios');
-const bcrypt = require('bcrypt');
+const utils = require('./url.utils');
 const Url = require('./url.model');
-const shorten = longurl => {
-	let hash = bcrypt.hashSync(longurl, 10);
-	hash = hash.replace(/[^a-z0-9A-z]/g, '').substring(0, 8)
-	return hash;
-}
 
 module.exports = class myUrl {
 	static exists(req, res, next) {
 		const { longurl } = req.body;
-		axios(longurl)
+		let testUrl = utils.checkProtocol(longurl)
+		axios(testUrl)
 			.then(response => (
 				response.status === 200 ? next()
 				: res.status(response.status).json({ error: true, message: response.statusText })
@@ -20,9 +16,10 @@ module.exports = class myUrl {
 
 	static post(req, res, next) {
 		// console.log(`in myUrl.post`, req.user);
+		const { longurl } = req.body
 		const newUrl = {
-			longurl: req.body.longurl,
-			shorturl: shorten(req.body.longurl),
+			longurl: utils.urlPath(longurl),
+			shorturl: utils.shortUrl(longurl),
 			user_id: req.user._id
 		}
 		Url.create(newUrl, (err, doc) => {
@@ -48,32 +45,37 @@ module.exports = class myUrl {
 
 	static redirect(req, res, next) {
 		// console.log(`in redirect`, req.params);
-		!req.params.website ? next()
-		: Url.findOneAndUpdate({ shorturl: req.params.website }, {$inc: { hitcount: 1 }})
+		const shortUrl = req.params.website
+		console.log(`in redirect`, req.params);
+		Url.findOneAndUpdate({ shorturl: shortUrl.toLowerCase() }, {$inc: { hitcount: 1 }})
 			.then(doc => {
-				// console.log(doc.longurl);
+				console.log(doc.longurl);
 				// document.cookie = `shorturl=${doc.shorturl}`
-				res.redirect(doc.longurl);
+				!doc ? next() : res.redirect('https://' + doc.longurl);
 			})
 			.catch(err => res.status(400).json({ error: true, message: err.message }))
 	}
 
-	// static increment(req, res, next) {
-		// console.log(`in increment`, req.params);
-		// if (!req.params.website) {res.status(400).json({ error: true, message: `Not found.` })}
-		// if (req.user) {
-		// 	Url.findOneAndUpdate({ longurl: req.params.website, _id: req.user._id }, { $inc: {hitcount: 1} })
-		// 	.then(doc => {
-		// 		!doc ? res.status(400).json({ error: true, message: `No documents found` })
-		// 		: res.status(200).json({ error: false, message: `Another hit for record ${doc._id}!` })
-		// 	})
-		// 	.catch(err => res.status(400).json({ error: true, message: err.message }))
-		// } else {
-		// 	Url.update({ longurl: req.params.website }, {$inc: {hitcount: 1} }, {'multi': true}, (err, docs) => {
-		// 		err ? res.status(400).json({ error: true, message: err.message })
-		// 		: !docs ? res.status(400).json({ error: true, message: `No documents found` })
-		// 		: res.status(200).json({ error: false, message: `${docs.length} records updated!`})
-		// 	})
-		// }
-	// }
+	static increment(req, res, next) {
+		console.log(`in increment`, req.params);
+		const longUrl = utils.urlPath(req.params.website);
+		// If user logged in, only update that user's record;
+		// otherwise, update all records that match the url.
+		if (req.user) {
+			Url.findOneAndUpdate({ longurl: longUrl, _id: req.user._id }, { $inc: {hitcount: 1} })
+			.then(doc => {
+				!doc ? res.status(200).json({ error: true, message: `No record found` })
+				: res.status(200).json({ error: false, message: `Another hit for record ${doc._id}!` })
+			})
+			.catch(err => res.status(400).json({ error: true, message: err.message }))
+		} else {
+			Url.updateMany({ longurl: longUrl },
+				{$inc: {hitcount: 1} })
+			.then(docs => !docs ? 
+				res.status(200).json({ error: true, message: `No records found` })
+				: res.status(200).json({ error: false, message: `${docs.length} records updated!`})
+			)
+			.catch(e => res.status(400).json({ error: true, message: e.message }))
+		}
+	}
 }

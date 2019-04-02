@@ -50,7 +50,7 @@ const List = ({ urlList, deleteItem }) => (
 					{urlList.map(item => (
 						<TableRow key={item._id} hover={true}>
 							<TableCell style={styles.cell}>
-								<Link href={item.shorturl} target="_blank">
+								<Link href={`http://localhost:5000/${item.shorturl}`} target="_blank">
 									{item.longurl}
 								</Link>
 							</TableCell>

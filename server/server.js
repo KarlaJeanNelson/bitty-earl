@@ -6,7 +6,6 @@ const session = require('express-session');
 const http = require('http');
 const https = require('https');
 const passport = require('./user.local-strategy');
-const myUrl = require('./url.controller')
 
 require('dotenv').config();
 require('./db');
@@ -42,19 +41,26 @@ app.use(passport.session());
 /** ---------- EXPRESS ROUTES ---------- **/
 app.use('/api/urls', require('./url.router'));
 app.use('/api/users', require('./user.router'));
-app.get('/:website', myUrl.redirect);
-
+app.use('/', require('./website.router'))
 /** ---------- START SERVER ---------- **/
 app.listen(PORT, () => {
 		console.log(`Listening on port ${PORT}.`);
 });
 
-// app.listen(3000, () => {
-// 	console.log(`Listening on port 3000.`);
-// });
+const httpServer = http.createServer(app);
+httpServer.on('request', (req, res) => {
+	console.log('http request');
+	console.log(req.headers);
+})
+httpServer.listen(80, () => {
+	console.log(`listening on http server`);
+})
 
-// const httpServer = http.createServer()
-// httpServer.listen(80)
-// httpServer.on('request', (req, res) => console.log(req, res))
-// https.createServer().listen(443);
-// httpServer.on('request', (req, res) => console.log(req, res))
+const httpsServer = https.createServer(app);
+httpsServer.on('request', (req, res) => {
+	console.log('https');
+	console.log(req.headers);
+})
+httpsServer.listen(443, () => {
+	console.log(`listening on https server`);
+})

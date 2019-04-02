@@ -138,29 +138,18 @@ class App extends Component {
 		})
 	}
 
-	// Make sure url starts with http:// or https://
-	// If url is not formatted correctly, set helper text appropriately.
 	onSubmit = event => {
 		event.preventDefault();
 		const { longurl } = this.state;
-		try {
-			let myUrl = this.checkProtocol(longurl);
-			myUrl = new URL(myUrl);
-			this.setHelperText('Looing good! Testing URL...', false);
-			this.saveUrl(myUrl.toString());
-		} catch(e) {
-			this.setHelperText(`Not a valid url.`, true)
+		const config = {
+			method: 'post',
+			url: '/api/urls',
+			data: {
+				longurl
+			},
+			withCredentials: true
 		}
-	}
-
-	checkProtocol = longurl => {
-		let newUrl = longurl.replace('www.', '')
-		newUrl = (newUrl.startsWith('http://') || newUrl.startsWith('https://'))
-		? newUrl : `https://${newUrl}`
-		this.setState({
-			longurl: newUrl
-		})
-		return newUrl;
+		this.apiCall(config);
 	}
 
 	// Set helpertext for form field
@@ -170,16 +159,6 @@ class App extends Component {
 			err,
 			longurl
 		})
-	}
-
-	saveUrl = longurl => {
-		const config = {
-			method: 'post',
-			url: '/api/urls',
-			data: { longurl },
-			withCredentials: true,
-		}
-		this.apiCall(config);
 	}
 
 	deleteItem = id => {
