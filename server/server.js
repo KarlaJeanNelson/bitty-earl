@@ -18,7 +18,6 @@ const inProd = NODE_ENV === 'production';
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser())
-app.use(express.static('build'));
 
 /** ---------- SESSION MIDDLEWARE ---------- **/
 const mySession = {
@@ -33,6 +32,7 @@ if (inProd) {
   mySession.cookie.secure = true // serve secure cookies
 }
 app.use(session(mySession));
+app.use(express.static('build'));
 
 /** ---------- PASSPORT MIDDLEWARE ---------- **/
 app.use(passport.initialize());
