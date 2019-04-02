@@ -236,6 +236,7 @@ class App extends Component {
 	}
 
 	componentDidMount() {
+		console.log(`cookies`, this.props.cookies.getAll());
 		this.getUser();
 	}
 
