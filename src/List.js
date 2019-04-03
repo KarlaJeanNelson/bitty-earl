@@ -34,7 +34,7 @@ const styles = {
 	}
 }
 
-const pre = process.env.NODE_ENV && process.env.NODE_ENV === 'production' ? 'bitty-earl.herokuapp.com'
+const pre = process.env.NODE_ENV && process.env.NODE_ENV === 'production' ? ''
 : 'http://localhost:5000'
 
 const List = ({ urlList, deleteItem }) => (
