@@ -46,10 +46,10 @@ module.exports = class myUrl {
 	static redirect(req, res, next) {
 		// console.log(`in redirect`, req.params);
 		const shortUrl = req.params.website
-		console.log(`in redirect`, req.params);
+		// console.log(`in redirect`, req.params);
 		Url.findOneAndUpdate({ shorturl: shortUrl.toLowerCase() }, {$inc: { hitcount: 1 }})
 			.then(doc => {
-				console.log(doc.longurl);
+				// console.log(doc.longurl);
 				// document.cookie = `shorturl=${doc.shorturl}`
 				!doc ? next() : res.redirect('https://' + doc.longurl);
 			})
