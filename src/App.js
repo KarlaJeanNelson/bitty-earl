@@ -167,7 +167,7 @@ class App extends Component {
 	linkClick = url => {
 		axios(url)
 		.then(({data}) => {
-			window.open(data.longurl, '_blank').onloadstart(() => console.log(window.location))
+			window.open(data.longurl, '_blank')
 			
 		})
 		.catch(e => this.handleApiError(e))
