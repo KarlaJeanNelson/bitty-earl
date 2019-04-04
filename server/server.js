@@ -10,8 +10,6 @@ require('./db');
 // require('./website.utils');
 
 const PORT = process.env.PORT || 5000;
-const NODE_ENV = process.env.NODE_ENV || 'development';
-const inProd = NODE_ENV === 'production';
 
 /** ---------- MIDDLEWARE ---------- **/
 app.use(bodyParser.json());
@@ -22,9 +20,9 @@ app.use(cookieParser())
 const mySession = {
 	secret: process.env.SERVER_SESSION_SECRET || 's00perD00perS3cr3t', // set this in your .env file
   key: 'user',
-  resave: true,
+  resave: false,
   saveUninitialized: false,
-  cookie: { maxage: 60000000, secure: inProd ? true : false },
+  cookie: { maxage: 60000000, secure: false },
 }
 app.use(session(mySession));
 app.use(express.static('build'));
