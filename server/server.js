@@ -3,8 +3,8 @@ const app = express();
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const http = require('http');
-const https = require('https');
+// const http = require('http');
+// const https = require('https');
 const passport = require('./user.local-strategy');
 
 require('dotenv').config();
@@ -43,5 +43,5 @@ app.listen(PORT, () => {
 		console.log(`Listening on port ${PORT}.`);
 });
 
-http.createServer(app).listen(80)
-https.createServer(app).listen(443)
+// http.createServer(app).listen(80)
+// https.createServer(app).listen(443)
