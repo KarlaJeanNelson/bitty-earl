@@ -32,17 +32,7 @@ const reset = {
 };
 
 class App extends Component {
-	state = {
-		signupMode: false,
-		email: '',
-		password: '',
-		password2: '',
-		_id: '',
-		longurl: '',
-		helperText: '',
-		error: false,
-		urlList: []
-	};
+	state = { ...reset };
 
 	getUser = () => {
 		axios.get('/api/users', { withCredentials: true })
@@ -94,6 +84,7 @@ class App extends Component {
 				password: this.state.password
 			}
 		}
+		
 		axios(config)
 		.then(({data}) => {
 			// console.log(data)
