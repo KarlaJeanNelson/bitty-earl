@@ -56,6 +56,18 @@ module.exports = class myUrl {
 			.catch(err => res.status(400).json({ error: true, message: err.message }))
 	}
 
+	static sendToSite(req, res, next) {
+		console.log(`in sendToSite`);
+		const { originalUrl } = req;
+		const shortUrl = originalUrl.startsWith('/') ? originalUrl.substring(1)
+		: originalUrl
+		Url.findOneAndUpdate({ shorturl: shortUrl.toLowerCase() }, {$inc: { hitcount: 1 }})
+			.then(doc => {
+				!doc ? next() : res.json({ longurl: 'https://' + doc.longurl });
+			})
+			.catch(err => res.status(400).json({ error: true, message: err.message }))
+	}
+
 	static increment(req, res, next) {
 		// console.log(`in increment`, req.params);
 		const longUrl = utils.urlPath(req.params.website);

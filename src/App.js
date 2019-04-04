@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import axios from 'axios';
-import { withCookies, Cookies } from 'react-cookie';
-import { instanceOf } from 'prop-types';
+// import { withCookies, Cookies } from 'react-cookie';
+// import { instanceOf } from 'prop-types';
 import Login from './Login';
 import Form from './Form';
 import List from './List';
@@ -40,7 +40,10 @@ class App extends Component {
 				this.setState({ ...reset, _id: data._id })
 				this.getUrls()
 			})
-			.catch(e => this.handleApiError(e))
+			.catch(e => {
+				this.handleApiError(e)
+				this.logout()
+			})
 	}
 
 	register = event => {
@@ -99,8 +102,8 @@ class App extends Component {
 		})
 	}
 
-	logout = event => {
-		event.preventDefault();
+	logout = (event='') => {
+		if (event) {event.preventDefault();}
 		axios.post('/api/users/logout')
 		.then(this.setState(reset))
 		.catch(e => this.handleApiError(e))
@@ -159,6 +162,11 @@ class App extends Component {
 			withCredentials: true
 		}
 		this.apiCall(config);
+	}
+
+	linkClick = url => {
+		axios(url)
+		.then(({data}) => window.open(data.longurl, '_blank'))		
 	}
 
 	apiCall = config => {
@@ -220,6 +228,7 @@ class App extends Component {
 						urlList={urlList}
 						getUrls={this.getUrls}
 						deleteItem={this.deleteItem}
+						linkClick={this.linkClick}
 					/>
 				</Grid>
 			</Fragment>
@@ -227,7 +236,6 @@ class App extends Component {
 	}
 
 	componentDidMount() {
-		console.log(`cookies`, this.props.cookies.getAll());
 		this.getUser();
 	}
 
@@ -243,8 +251,9 @@ class App extends Component {
   }
 }
 
-App.propTypes = {
-	cookies: instanceOf(Cookies).isRequired
-};
+// App.propTypes = {
+// 	cookies: instanceOf(Cookies).isRequired
+// };
 
-export default withCookies(App);
+// export default withCookies(App);
+export default App;

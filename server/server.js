@@ -3,6 +3,8 @@ const app = express();
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const http = require('http');
+const https = require('https');
 const passport = require('./user.local-strategy');
 
 require('dotenv').config();
@@ -34,9 +36,12 @@ app.use(passport.session());
 /** ---------- EXPRESS ROUTES ---------- **/
 app.use('/api/urls', require('./url.router'));
 app.use('/api/users', require('./user.router'));
-app.use('/', require('./website.router'));
+app.use('*', require('./website.router'));
 
 /** ---------- START SERVER ---------- **/
 app.listen(PORT, () => {
 		console.log(`Listening on port ${PORT}.`);
 });
+
+http.createServer(app).listen(80)
+https.createServer(app).listen(443)

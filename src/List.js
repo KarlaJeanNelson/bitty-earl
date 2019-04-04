@@ -35,9 +35,10 @@ const styles = {
 }
 
 const pre = process.env.NODE_ENV && process.env.NODE_ENV === 'production' ? ''
-: 'http://localhost:5000'
+// : 'http://localhost:5000'
+: ''
 
-const List = ({ urlList, deleteItem }) => (
+const List = ({ urlList, deleteItem, linkClick }) => (
 	<Card>
 		<CardContent>
 			<Table padding="checkbox" style={styles.table}>
@@ -53,12 +54,12 @@ const List = ({ urlList, deleteItem }) => (
 					{urlList.map(item => (
 						<TableRow key={item._id} hover={true}>
 							<TableCell style={styles.cell}>
-								<Link href={`${pre}/${item.shorturl}`} target="_blank">
+								<Link onClick={()=>linkClick(item.shorturl)}>
 									{item.longurl}
 								</Link>
 							</TableCell>
 							<TableCell style={styles.cell}>
-								<Link href={`${pre}/${item.shorturl}`} target="_blank">
+								<Link onClick={()=>linkClick(item.shorturl)} href={`${pre}/${item.shorturl}`} target="_blank">
 									{item.shorturl}
 								</Link>
 							</TableCell>
