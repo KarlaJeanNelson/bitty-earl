@@ -34,7 +34,7 @@ passport.use('local', new LocalStrategy({
 			: !user ? 'Email not found. Please register!'
 			: !bcrypt.compareSync(password, user.password) ? 'Incorrect password'
 			: 'Something went wrong!'
-			// req.res.status(400).json({ error: true, message })
+			req.res.status(400).json({ error: true, message })
 			done(null, false, { message })
 		}
 	})

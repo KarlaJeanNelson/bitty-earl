@@ -84,7 +84,7 @@ class App extends Component {
 				password: this.state.password
 			}
 		}
-		
+
 		axios(config)
 		.then(({data}) => {
 			// console.log(data)
@@ -92,7 +92,7 @@ class App extends Component {
 			this.getUser();
 		})
 		.catch(e => {
-			if (e.respnse && e.response.data.message && e.response.data.message.includes('Please register')) {
+			if (e.response && e.response.data.message && e.response.data.message.startsWith('Email')) {
 				this.toggleMode();
 			}
 			this.handleApiError(e)
