@@ -24,11 +24,7 @@ const mySession = {
   key: 'user',
   resave: true,
   saveUninitialized: false,
-  cookie: { maxage: 60000000, secure: false },
-}
-if (inProd) {
-  app.set('trust proxy', 1) // trust first proxy
-  mySession.cookie.secure = true // serve secure cookies
+  cookie: { maxage: 60000000, secure: inProd ? true : false },
 }
 app.use(session(mySession));
 app.use(express.static('build'));
@@ -46,21 +42,3 @@ app.use('/', require('./website.router'));
 app.listen(PORT, () => {
 		console.log(`Listening on port ${PORT}.`);
 });
-
-// const httpServer = http.createServer(app);
-// httpServer.on('request', (req, res) => {
-// 	console.log('http request');
-// 	console.log(req.headers);
-// })
-// httpServer.listen(80, () => {
-// 	console.log(`listening on http server`);
-// })
-
-// const httpsServer = https.createServer(app);
-// httpsServer.on('request', (req, res) => {
-// 	console.log('https');
-// 	console.log(req.headers);
-// })
-// httpsServer.listen(443, () => {
-// 	console.log(`listening on https server`);
-// })

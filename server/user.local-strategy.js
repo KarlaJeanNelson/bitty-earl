@@ -27,6 +27,7 @@ passport.use('local', new LocalStrategy({
 		// console.log(`in passport findOne`, err, !user, !bcrypt.compareSync(password, user.password));
 		// console.log(err, user);
 		if (user && bcrypt.compareSync(password, user.password)) {
+			req.session.user = user;
 			done(null, user)
 		} else {
 			let message = err ? err.message
