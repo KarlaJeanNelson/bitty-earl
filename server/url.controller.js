@@ -6,20 +6,19 @@ module.exports = class myUrl {
 	static exists(req, res, next) {
 		const { longurl } = req.body;
 		let testUrl = utils.checkProtocol(longurl)
-		axios(testUrl)
-			.then(response => (
-				response.status === 200 ? next()
-				: res.status(response.status).json({ error: true, message: response.statusText })
-			))
-			.catch(e => res.status(400).json({ error: true, message: `Address ${longurl} not found` }))
+			axios(testUrl)
+			.then(response => {
+					res.locals.responseUrl = response.request.res.responseUrl;
+					next();
+			})
+			.catch(e => res.status(400).json({ error: true, message: `Address ${longurl} not found`}))		
 	}
 
 	static post(req, res, next) {
-		// console.log(`in myUrl.post`, req.user);
-		const { longurl } = req.body
+		const longurl = res.locals.responseUrl
 		const newUrl = {
-			longurl: utils.urlPath(longurl),
-			shorturl: utils.shortUrl(longurl),
+			longurl: longurl.toLowerCase(),
+			shorturl: utils.pre + utils.shortUrl(longurl),
 			user_id: req.user._id
 		}
 		Url.create(newUrl, (err, doc) => {
@@ -45,32 +44,26 @@ module.exports = class myUrl {
 
 	static redirect(req, res, next) {
 		// console.log(`in redirect`, req.params);
-		const shortUrl = req.params.website
-		// console.log(`in redirect`, req.params);
+		if (!req.params.website) {next()}
+		let shortUrl = utils.pre + req.params.website
 		Url.findOneAndUpdate({ shorturl: shortUrl.toLowerCase() }, {$inc: { hitcount: 1 }})
 			.then(doc => {
 				// console.log(doc.longurl);
-				// document.cookie = `shorturl=${doc.shorturl}`
-				!doc ? next() : res.redirect('https://' + doc.longurl);
-			})
-			.catch(err => res.status(400).json({ error: true, message: err.message }))
-	}
-
-	static sendToSite(req, res, next) {
-		console.log(`in sendToSite`);
-		const { originalUrl } = req;
-		const shortUrl = originalUrl.startsWith('/') ? originalUrl.substring(1)
-		: originalUrl
-		Url.findOneAndUpdate({ shorturl: shortUrl.toLowerCase() }, {$inc: { hitcount: 1 }})
-			.then(doc => {
-				!doc ? next() : res.json({ longurl: 'https://' + doc.longurl });
+				!doc ? next() : res.redirect(doc.longurl);
 			})
 			.catch(err => res.status(400).json({ error: true, message: err.message }))
 	}
 
 	static increment(req, res, next) {
 		// console.log(`in increment`, req.params);
-		const longUrl = utils.urlPath(req.params.website);
+		console.log(`in increment`, req.originalUrl);
+		let longUrl = req.originalUrl || '';
+		longUrl = utils.responseUrl(longUrl);
+		console.log(longUrl)
+		if (longUrl.error || longUrl.status >= 400) { 
+			res.status(longUrl.status).json({ error: true, message: longUrl.message})
+		}
+
 		// If user logged in, only update that user's record;
 		// otherwise, update all records that match the url.
 		if (req.user) {
@@ -82,12 +75,12 @@ module.exports = class myUrl {
 			.catch(err => res.status(400).json({ error: true, message: err.message }))
 		} else {
 			Url.updateMany({ longurl: longUrl },
-				{$inc: {hitcount: 1} })
+				{ $inc: {hitcount: 1} })
 			.then(docs => !docs ? 
 				res.status(200).json({ error: true, message: `No records found` })
 				: res.status(200).json({ error: false, message: `${docs.length} records updated!`})
 			)
-			.catch(e => res.status(400).json({ error: true, message: e.message }))
+			.catch(e => res.json({ error: true, message: e.message }))
 		}
 	}
 }

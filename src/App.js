@@ -168,7 +168,6 @@ class App extends Component {
 		axios(url)
 		.then(({data}) => {
 			window.open(data.longurl, '_blank')
-			
 		})
 		.catch(e => this.handleApiError(e))
 	}

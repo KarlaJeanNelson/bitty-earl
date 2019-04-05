@@ -10,6 +10,7 @@ const passport = require('./user.local-strategy');
 require('dotenv').config();
 require('./db');
 // require('./website.utils');
+const myUrl = require('./url.controller')
 
 const PORT = process.env.PORT || 5000;
 
@@ -36,7 +37,7 @@ app.use(passport.session());
 /** ---------- EXPRESS ROUTES ---------- **/
 app.use('/api/urls', require('./url.router'));
 app.use('/api/users', require('./user.router'));
-app.use('*', require('./website.router'));
+app.use('*/:website', myUrl.redirect, myUrl.increment);
 
 /** ---------- START SERVER ---------- **/
 app.listen(PORT, () => {

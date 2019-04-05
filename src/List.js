@@ -34,10 +34,6 @@ const styles = {
 	}
 }
 
-const pre = process.env.NODE_ENV && process.env.NODE_ENV === 'production' ? ''
-// : 'http://localhost:5000'
-: ''
-
 const List = ({ urlList, deleteItem, linkClick }) => (
 	<Card>
 		<CardContent>
@@ -54,12 +50,12 @@ const List = ({ urlList, deleteItem, linkClick }) => (
 					{urlList.map(item => (
 						<TableRow key={item._id} hover={true}>
 							<TableCell style={styles.cell}>
-								<Link onClick={()=>linkClick(item.shorturl)}>
+								<Link href={'http://' + item.shorturl} target="_blank">
 									{item.longurl}
 								</Link>
 							</TableCell>
 							<TableCell style={styles.cell}>
-								<Link onClick={()=>linkClick(item.shorturl)} href={`${pre}/${item.shorturl}`} target="_blank">
+								<Link href={'http://' + item.shorturl} target="_blank">
 									{item.shorturl}
 								</Link>
 							</TableCell>
