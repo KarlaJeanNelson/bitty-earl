@@ -21,7 +21,7 @@ module.exports = class myUser {
 
 	static logout(req, res) {
 		req.logout();
-		req.session.destroy();
+		req.session = null;
 		res.redirect('/');
 	}
 
@@ -31,11 +31,12 @@ module.exports = class myUser {
   }
 
   static isAuthenticated(req, res, next) {
-		// console.log(`in isAuthenticated`, req.isAuthenticated());
+		// console.log(`in isAuthenticated`, req.isAuthenticated(), req.session, req.headers);
     if (req.isAuthenticated()) {
       next();
     } else {
-      res.status(403).json({ error: true, message: 'User not authenticated' });
+			// res.status(403).json({ error: true, message: 'User not authenticated' });
+			return myUser.logout(req, res);
     }
   }
 }

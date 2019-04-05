@@ -183,7 +183,7 @@ class App extends Component {
 
 	handleApiError = e => {
 		// console.log(e);
-		const message = !e.response ? e.message : e.response.data.message
+		const message = !e.response.data.message ? e.message : e.response.data.message
 		this.setHelperText(message, true)
 	}
 

@@ -1,23 +1,24 @@
 const express = require('express');
 const app = express();
+const helmet = require('helmet');
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser');
-const session = require('express-session');
+const session = require('cookie-session');
 // const http = require('http');
 // const https = require('https');
 const passport = require('./user.local-strategy');
 
 require('dotenv').config();
 require('./db');
-// require('./website.utils');
 const myUrl = require('./url.controller')
 
 const PORT = process.env.PORT || 5000;
 
 /** ---------- MIDDLEWARE ---------- **/
+app.use(helmet())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser())
+app.use(cookieParser());
 
 /** ---------- SESSION MIDDLEWARE ---------- **/
 const mySession = {
@@ -25,7 +26,7 @@ const mySession = {
   key: 'user',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxage: 60000000, secure: false },
+  cookie: { maxage: 60000000, secure: true, httpOnly: true },
 }
 app.use(session(mySession));
 app.use(express.static('build'));

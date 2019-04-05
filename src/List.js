@@ -47,7 +47,7 @@ const List = ({ urlList, deleteItem, linkClick }) => (
 					</TableRow>
 				</TableHead>
 				<TableBody>
-					{urlList.map(item => (
+					{urlList && urlList.map(item => (
 						<TableRow key={item._id} hover={true}>
 							<TableCell style={styles.cell}>
 								<Link href={'http://' + item.shorturl} target="_blank">
