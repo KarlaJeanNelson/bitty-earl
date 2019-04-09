@@ -5,11 +5,7 @@ import axios from 'axios';
 import Login from './Login';
 import Form from './Form';
 import List from './List';
-import {
-	CssBaseline,
-	Grid,
-	Button
-} from '@material-ui/core'
+import { CssBaseline, Grid, Button } from '@material-ui/core';
 
 const styles = {
 	container: {
@@ -17,7 +13,7 @@ const styles = {
 		minheight: '100vh',
 		padding: 16
 	}
-}
+};
 
 const reset = {
 	signupMode: false,
@@ -35,29 +31,30 @@ class App extends Component {
 	state = { ...reset };
 
 	getUser = () => {
-		axios.get('/api/users', { withCredentials: true })
+		axios
+			.get('/api/users', { withCredentials: true })
 			.then(({ data }) => {
-				this.setState({ ...reset, _id: data._id })
-				this.getUrls()
+				this.setState({ ...reset, _id: data._id });
+				this.getUrls();
 			})
 			.catch(e => {
-				this.handleApiError(e)
-				this.logout()
-			})
-	}
+				this.handleApiError(e);
+				this.logout();
+			});
+	};
 
 	register = event => {
 		event.preventDefault();
 		const { password, password2 } = this.state;
 		this.setHelperText('', false);
-		if (password.length < 8 ) {
-			this.setHelperText('Password must at least 8 characters', true)
-		} else if (password !== password2 ) {
-			this.setHelperText('Passwords must match!', true)
+		if (password.length < 8) {
+			this.setHelperText('Password must at least 8 characters', true);
+		} else if (password !== password2) {
+			this.setHelperText('Passwords must match!', true);
 		} else {
-			this.createUser()
+			this.createUser();
 		}
-	}
+	};
 
 	createUser = () => {
 		const config = {
@@ -68,17 +65,19 @@ class App extends Component {
 				email: this.state.email.toLowerCase(),
 				password: this.state.password
 			}
-		}
+		};
 		axios(config)
-			.then(({data}) => {
-				this.setHelperText(data.message, false)
-				this.login()
+			.then(({ data }) => {
+				this.setHelperText(data.message, false);
+				this.login();
 			})
-			.catch(e => this.handleApiError(e))
-	}
+			.catch(e => this.handleApiError(e));
+	};
 
 	login = (event = '') => {
-		if (event) { event.preventDefault() }
+		if (event) {
+			event.preventDefault();
+		}
 		const config = {
 			method: 'post',
 			url: '/api/users/login',
@@ -86,51 +85,58 @@ class App extends Component {
 				email: this.state.email.toLowerCase(),
 				password: this.state.password
 			}
-		}
+		};
 
 		axios(config)
-		.then(({data}) => {
-			// console.log(data)
-			this.setState({ _id: data._id, helperText: data.message });
-			this.getUser();
-		})
-		.catch(e => {
-			if (e.response && e.response.data.message && e.response.data.message.startsWith('Email')) {
-				this.toggleMode();
-			}
-			this.handleApiError(e)
-		})
-	}
+			.then(({ data }) => {
+				// console.log(data)
+				this.setState({ _id: data._id, helperText: data.message });
+				this.getUser();
+			})
+			.catch(e => {
+				if (
+					e.response &&
+					e.response.data.message &&
+					e.response.data.message.startsWith('Email')
+				) {
+					this.toggleMode();
+				}
+				this.handleApiError(e);
+			});
+	};
 
-	logout = (event='') => {
-		if (event) {event.preventDefault();}
-		axios.post('/api/users/logout')
-		.then(this.setState(reset))
-		.catch(e => this.handleApiError(e))
-	}
+	logout = (event = '') => {
+		if (event) {
+			event.preventDefault();
+		}
+		axios
+			.post('/api/users/logout')
+			.then(this.setState(reset))
+			.catch(e => this.handleApiError(e));
+	};
 
 	toggleMode = () => {
 		this.setState({
 			signupMode: !this.state.signupMode
-		})
-	}
+		});
+	};
 
 	getUrls = () => {
 		const config = {
 			url: '/api/urls',
-			withCredentials: true,
-		}
+			withCredentials: true
+		};
 		axios(config)
-			.then(({data}) => this.setState({ urlList: data.docs }))
-			.catch(e => this.handleApiError(e))
-	}
+			.then(({ data }) => this.setState({ urlList: data.docs }))
+			.catch(e => this.handleApiError(e));
+	};
 
 	onChange = event => {
 		event.preventDefault();
 		this.setState({
 			[event.target.name]: event.target.value
-		})
-	}
+		});
+	};
 
 	onSubmit = event => {
 		event.preventDefault();
@@ -142,50 +148,52 @@ class App extends Component {
 				longurl
 			},
 			withCredentials: true
-		}
+		};
 		this.apiCall(config);
-	}
+	};
 
 	// Set helpertext for form field
-	setHelperText = (helperText, err, longurl='') => {
+	setHelperText = (helperText, err, longurl = '') => {
 		this.setState({
 			helperText,
 			err,
 			longurl
-		})
-	}
+		});
+	};
 
 	deleteItem = id => {
 		const config = {
 			method: 'delete',
 			url: `/api/urls/${id}`,
 			withCredentials: true
-		}
+		};
 		this.apiCall(config);
-	}
+	};
 
 	linkClick = url => {
 		axios(url)
-		.then(({data}) => {
-			window.open(data.longurl, '_blank')
-		})
-		.catch(e => this.handleApiError(e))
-	}
+			.then(({ data }) => {
+				window.open(data.longurl, '_blank');
+			})
+			.catch(e => this.handleApiError(e));
+	};
 
 	apiCall = config => {
 		axios(config)
-			.then(({data}) => {
-				this.setHelperText(data.message, false)
-				this.getUrls()
+			.then(({ data }) => {
+				this.setHelperText(data.message, false);
+				this.getUrls();
 			})
-			.catch(e => this.handleApiError(e))
-	}
+			.catch(e => this.handleApiError(e));
+	};
 
 	handleApiError = e => {
 		// console.log(e);
-		const message = !e.response.data.message ? e.message : e.response.data.message
-		this.setHelperText(message, true)
-	}
+		const message = !e.response.data.message
+			? e.message
+			: e.response.data.message;
+		this.setHelperText(message, true);
+	};
 
 	LoginForm = () => {
 		const { helperText, email, password, signupMode } = this.state;
@@ -202,19 +210,15 @@ class App extends Component {
 					toggleMode={this.toggleMode}
 				/>
 			</Grid>
-		)
-	}
+		);
+	};
 
 	UrlFormAndList = () => {
 		const { urlList, longurl, helperText } = this.state;
 		return (
 			<Fragment>
 				<Grid item xs={12} container justify="flex-end">
-					<Button
-						color="secondary"
-						variant="contained"
-						onClick={this.logout}
-					>
+					<Button color="secondary" variant="contained" onClick={this.logout}>
 						Logout
 					</Button>
 				</Grid>
@@ -235,23 +239,23 @@ class App extends Component {
 					/>
 				</Grid>
 			</Fragment>
-		)
-	}
+		);
+	};
 
 	componentDidMount() {
 		this.getUser();
 	}
 
-  render() {
-    return (
-      <div style={styles.container}>
+	render() {
+		return (
+			<div style={styles.container}>
 				<CssBaseline />
 				<Grid container spacing={16} direction="column">
-					{ this.state._id ? <this.UrlFormAndList /> : <this.LoginForm /> }
+					{this.state._id ? <this.UrlFormAndList /> : <this.LoginForm />}
 				</Grid>
-      </div>
-    );
-  }
+			</div>
+		);
+	}
 }
 
 // App.propTypes = {

@@ -7,16 +7,16 @@ module.exports = class myUser {
 			email: req.body.email,
 			password: bcrypt.hashSync(req.body.password, 10)
 		})
-		.then(user => res.status(201).json({ _id: user._id, email: user.email }))
-		.catch(e => res.status(400).json({ error: true, message: e.message }))
-}
+			.then(user => res.status(201).json({ _id: user._id, email: user.email }))
+			.catch(e => res.status(400).json({ error: true, message: e.message }));
+	}
 
 	static login(req, res) {
 		// console.log(`in login`, req.body);
-    res.status(200).json({
-      email: req.user.email,
-      _id: req.user._id
-    });
+		res.status(200).json({
+			email: req.user.email,
+			_id: req.user._id
+		});
 	}
 
 	static logout(req, res) {
@@ -27,16 +27,16 @@ module.exports = class myUser {
 
 	static get(req, res) {
 		// console.log(`in getuser`, req.user);
-    res.status(200).json(req.user)
-  }
+		res.status(200).json(req.user);
+	}
 
-  static isAuthenticated(req, res, next) {
+	static isAuthenticated(req, res, next) {
 		// console.log(`in isAuthenticated`, req.isAuthenticated(), req.session, req.headers);
-    if (req.isAuthenticated()) {
-      next();
-    } else {
+		if (req.isAuthenticated()) {
+			next();
+		} else {
 			// res.status(403).json({ error: true, message: 'User not authenticated' });
 			return myUser.logout(req, res);
-    }
-  }
-}
+		}
+	}
+};

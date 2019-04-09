@@ -33,7 +33,10 @@ const Login = props => {
 				</Tabs>
 			</AppBar>
 			<CardContent>
-				<form id="login" onSubmit={signupMode ? (e)=>register(e) : (e)=>login(e)}>
+				<form
+					id="login"
+					onSubmit={signupMode ? e => register(e) : e => login(e)}
+				>
 					<TextField
 						autoFocus
 						fullWidth
@@ -44,13 +47,13 @@ const Login = props => {
 						name="email"
 						label="email"
 						value={email}
-						onChange={(e)=>onChange(e)}
+						onChange={e => onChange(e)}
 						InputProps={{
 							startAdornment: (
 								<InputAdornment position="start">
-									<FontAwesomeIcon icon="user-circle" fixedWidth/>
+									<FontAwesomeIcon icon="user-circle" fixedWidth />
 								</InputAdornment>
-							),
+							)
 						}}
 					/>
 					<TextField
@@ -61,16 +64,16 @@ const Login = props => {
 						name="password"
 						label="password"
 						value={password}
-						onChange={(e)=>onChange(e)}
+						onChange={e => onChange(e)}
 						InputProps={{
 							startAdornment: (
 								<InputAdornment position="start">
-									<FontAwesomeIcon icon="lock" fixedWidth/>
+									<FontAwesomeIcon icon="lock" fixedWidth />
 								</InputAdornment>
-							),
+							)
 						}}
 					/>
-					{signupMode && 
+					{signupMode && (
 						<TextField
 							fullWidth
 							required
@@ -79,28 +82,24 @@ const Login = props => {
 							name="password2"
 							label="retype password"
 							value={password2}
-							onChange={(e)=>onChange(e)}
+							onChange={e => onChange(e)}
 							InputProps={{
 								startAdornment: (
 									<InputAdornment position="start">
-										<FontAwesomeIcon icon="check-double" fixedWidth/>
+										<FontAwesomeIcon icon="check-double" fixedWidth />
 									</InputAdornment>
-								),
+								)
 							}}
 						/>
-					}
+					)}
 					<Typography>{helperText}</Typography>
-					<Button
-						variant="contained"
-						color="secondary"
-						type="submit"
-					>
+					<Button variant="contained" color="secondary" type="submit">
 						Submit
 					</Button>
 				</form>
 			</CardContent>
 		</Card>
-	)
-}
+	);
+};
 
 export default Login;

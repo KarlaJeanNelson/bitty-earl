@@ -3,14 +3,13 @@ const router = express.Router();
 const passport = require('passport');
 const user = require('./user.controller');
 
-router.route('/login')
-	.post(passport.authenticate('local'), user.login)
+router.route('/login').post(passport.authenticate('local'), user.login);
 
-router.route('/logout')
-	.post(user.logout)
+router.route('/logout').post(user.logout);
 
-router.route('/')
+router
+	.route('/')
 	.post(user.register)
-	.get(user.isAuthenticated, user.get)
+	.get(user.isAuthenticated, user.get);
 
 module.exports = router;

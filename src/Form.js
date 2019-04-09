@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-	Button,
-	Card,
-	CardContent,
-	TextField,
-} from '@material-ui/core';
+import { Button, Card, CardContent, TextField } from '@material-ui/core';
 
 const Form = ({ onChange, onSubmit, longurl, helperText }) => (
 	<form id="url-form" onSubmit={onSubmit}>
@@ -21,16 +16,12 @@ const Form = ({ onChange, onSubmit, longurl, helperText }) => (
 					onChange={onChange}
 					helperText={helperText}
 				/>
-				<Button
-					variant="contained"
-					color="secondary"
-					type="submit"
-				>
+				<Button variant="contained" color="secondary" type="submit">
 					Create URL
 				</Button>
 			</CardContent>
 		</Card>
 	</form>
-)
+);
 
 export default Form;
